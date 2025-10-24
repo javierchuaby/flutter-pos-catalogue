@@ -86,3 +86,34 @@ The objective:
 
 
 
+
+## Implementation Details
+
+### Architecture Overview
+This offline POS implementation follows a simple architecture:
+- **API Layer**: Fetches products from external API with bearer authentication
+- **Database Layer**: Local SQLite database using Prisma ORM for offline storage
+- **UI Layer**: Flutter app with product catalog grid and sync functionality
+
+### Data Flow
+1. **Online Sync**: API → Parse JSON → Store in DB → Display in UI
+2. **Offline Mode**: Load from DB → Display cached products
+3. **Product Selection**: Tap product → Show detailed dialog
+
+### Sync Button Behavior
+- **Online**: Fetches latest products, updates cache, shows success message
+- **Offline**: Shows cached products with offline status indicator
+- **Loading**: Button disabled with spinner during sync operation
+
+### Offline Behavior
+The app works completely offline after initial sync by:
+- Loading products from local SQLite database on startup
+- Showing "Offline Mode" status when network unavailable
+- Displaying cached product catalog with full functionality
+- Maintaining product selection and dialog features
+
+### API Details
+- **Endpoint**: `https://challenge-test.ordering.sg/api/products`
+- **Authentication**: Bearer token (`Bearer chicken-good`)
+- **Response Format**: `{"data": [{"id": int, "name": string, "price": string}]}`
+- **Storage**: Products stored with price as String to match Prisma schema
