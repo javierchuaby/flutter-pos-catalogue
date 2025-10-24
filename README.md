@@ -84,5 +84,70 @@ The objective:
 3. Load resource from database
 4. Even when offline, products catalogue will still show
 
+<br>
 
+## Implementation Details
 
+### Architecture Overview
+This offline POS implementation follows a simple architecture:
+- **API Layer**: Fetches products from external API with bearer authentication
+- **Database Layer**: Local SQLite database using Prisma ORM for offline storage
+- **UI Layer**: Flutter app with product catalog grid and sync functionality
+
+### Data Flow
+1. **Online Sync**: API → Parse JSON → Store in DB → Display in UI
+2. **Offline Mode**: Load from DB → Display cached products
+3. **Product Selection**: Tap product → Show detailed dialog
+
+### Sync Button Behavior
+- **Online**: Fetches latest products, updates cache, shows success message
+- **Offline**: Shows cached products with offline status indicator
+- **Loading**: Button disabled with spinner during sync operation
+
+### Offline Behavior
+The app works completely offline after initial sync by:
+- Loading products from local SQLite database on startup
+- Showing "Offline Mode" status when network unavailable
+- Displaying cached product catalog with full functionality
+- Maintaining product selection and dialog features
+
+### API Details
+- **Endpoint**: `https://challenge-test.ordering.sg/api/products`
+- **Authentication**: Bearer token (`Bearer chicken-good`)
+- **Response Format**: `{"data": [{"id": int, "name": string, "price": string}]}`
+- **Storage**: Products stored with price as String to match Prisma schema
+
+<br>
+
+### Testing Functionality
+
+1. **Initial Setup**:
+```
+flutter clean
+flutter pub get
+flutter run
+```
+
+2. **Test Online Sync**:
+- Ensure device has internet connection
+- Tap the sync button (floating action button)
+- Verify products appear: Ice Cream ($5.00), Chendol ($6.00), Bobo Cha Cha ($5.50)
+- Check status shows "Products synced successfully!"
+
+3. **Test Offline Mode**:
+- Turn off device internet/WiFi
+- Restart the app or hot restart (R in terminal)
+- Products should still display from local cache
+- Status should show "Offline Mode - 3 products cached"
+
+4. **Test Product Selection**:
+- Tap any product card
+- Dialog should show product name, formatted price, and ID
+- Works both online and offline
+
+### Technical Notes
+
+- **Price Storage**: API returns price as string ("5.00")
+- **Database**: Uses Prisma ORM with SQLite for local storage
+- **Offline First**: App loads from database first, then syncs in background when online
+- **Error Handling**: Network failures gracefully fall back to cached data
