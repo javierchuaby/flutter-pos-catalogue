@@ -114,7 +114,7 @@ class _MyHomePageState extends State<MyHomePage> {
       });
     } catch (e) {
       setState(() {
-        _statusMessage = 'Sync failed: $e. ${_products.isNotEmpty ? "Showing cached products." : ""}';
+        _statusMessage = 'Sync failed: No internet connection. Showing cached products from last sync.';
       });
     } finally {
       setState(() {
